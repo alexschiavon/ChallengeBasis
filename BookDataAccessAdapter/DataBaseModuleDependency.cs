@@ -17,11 +17,13 @@ namespace Finance.DataAccessAdapter
             services.AddTransient<IAuthorRepository, AuthorRepository>();
             services.AddTransient<ISubjectRepository, SubjectRepository>();
 
+            //services.AddDbContext<BookContext>();
+
             services.AddDbContext<BookContext>(options =>
             {
-                //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-                //options.UseNpgsql(connectionString,
-                //    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                options.UseNpgsql(connectionString,
+                    b => b.MigrationsAssembly(typeof(BookContext).Assembly.FullName));
             });
         }
     }
