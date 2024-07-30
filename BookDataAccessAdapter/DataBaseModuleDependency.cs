@@ -16,8 +16,12 @@ namespace Finance.DataAccessAdapter
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IAuthorRepository, AuthorRepository>();
             services.AddTransient<ISubjectRepository, SubjectRepository>();
+            services.AddTransient<IPurchaseTypeRepository, PurchaseTypeRepository>();
 
-            //services.AddDbContext<BookContext>();
+            //services.AddDbContext<BookContext>(options =>
+            //{
+            //    options.UseInMemoryDatabase("BookDatabase");
+            //});
 
             services.AddDbContext<BookContext>(options =>
             {

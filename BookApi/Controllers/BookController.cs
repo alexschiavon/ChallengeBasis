@@ -6,6 +6,7 @@ using BookDomain.Filters;
 using BookDomain.Models;
 using BookDomain.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookApi.Controllers
 {
@@ -46,35 +47,50 @@ namespace BookApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] Book book)
         {
-            if (book.BookId != null && book.BookId != Guid.Empty)
-                return BadRequest("Crie um objeto sem enviar o ID");
+            try
+            {
+                if (book.BookId != null && book.BookId != Guid.Empty)
+                    return BadRequest("Crie um objeto sem enviar o ID");
 
-            var model = await _service.SaveOrUpdate(book);
-            return CreatedAtAction(nameof(GetBookById), new { id = model.BookId }, model);
+                var model = await _service.SaveOrUpdate(book);
+                return CreatedAtAction(nameof(GetBookById), new { id = model.BookId }, model);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(Guid id, [FromBody] Book updatedBook)
         {
-            var book = await _service.FindById(updatedBook.BookId);
-            if (book == null)
-                return NotFound();
-
-            book.Title = updatedBook.Title;
-            // Update other properties accordingly
-            await _service.SaveOrUpdate(book);
-            return NoContent();
+            try
+            {
+                await _service.SaveOrUpdate(updatedBook);
+                return NoContent();
+            }
+            catch (ValidationException ex) { 
+                return BadRequest(ex.Message); 
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id)
         {
-            var book = await _service.FindById(id);
-            if (book == null)
-                return NotFound();
+            try
+            {
+                var book = await _service.FindById(id);
+                if (book == null)
+                    return NotFound();
 
-            await _service.Delete(book);
-            return NoContent();
+                await _service.Delete(book);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
     }
 }

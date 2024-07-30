@@ -17,6 +17,7 @@ namespace Finance.Application
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<IAuthorService, AuthorService>();
+            services.AddScoped<IPurchaseTypeService, PurchaseTypeService>();
 
             services.AddDataBaseModule(configuration);
             return services;

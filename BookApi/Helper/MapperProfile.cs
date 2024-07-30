@@ -13,6 +13,7 @@ namespace BookApi.Helper
         {
             CreateMap<BookModel, Book>();
             CreateMap<Book, BookModel>();
+            CreateMap<Book, Book>();
 
             CreateMap<Metadata<Book, BasicFilter>, Metadata<BookModel, BasicFilter>>();
             CreateMap<Metadata<BookModel, BasicFilter>, Metadata<Book, BasicFilter>>();
