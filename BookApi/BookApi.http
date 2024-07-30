@@ -1,6 +1,215 @@
-@BookApi_HostAddress = https://localhost:32768
+@BookApi_HostAddress = https://localhost:5001
+@bookId = d8d9a82b-7821-42ad-9505-83b0e99d0f32
+@authorId = 3868d52-98e9-4f7a-aa90-8ac980fdce27
+@subjectId = 37ff9aaf-6d6c-4196-86f8-5ec8e5325151
+@purchaseTypeId = 67917926-a714-4a4b-a553-c3f3102f307f
 
-GET {{BookApi_HostAddress}}/books/
+
+GET {{BookApi_HostAddress}}/api/books
+Accept: application/json
+
+### Get all books and capture the first bookId
+GET {{BookApi_HostAddress}}/api/books?Pagination.Limit=100&Pagination.CurrentPage=0&SortedBy.Order=ASC
+Accept: application/json
+
+> {% 
+  const response = pm.response.json();
+  const firstBookId = response.content[0].bookId;
+  pm.environment.set("bookId", firstBookId);
+%}
+
+###
+
+### Get a single book by ID using the captured bookId
+GET {{BookApi_HostAddress}}/api/books/{{bookId}}
 Accept: application/json
 
 ###
+
+### Create a new book
+POST {{BookApi_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "title": "New Book",
+  "publisher": "New Publisher",
+  "edition": 1,
+  "publicationYear": "2023"
+}
+
+###
+
+### Update an existing book using the captured bookId
+PUT {{BookApi_HostAddress}}/api/books/{{bookId}}
+Content-Type: application/json
+
+{
+  "bookId": "{{bookId}}",
+  "title": "Updated Book",
+  "publisher": "Updated Publisher",
+  "edition": 2,
+  "publicationYear": "2024"
+}
+
+###
+
+### Delete a book by ID using the captured bookId
+DELETE {{BookApi_HostAddress}}/api/books/{{bookId}}
+Accept: application/json
+
+### Authors API
+
+GET {{BookApi_HostAddress}}/api/authors
+Accept: application/json
+
+
+### Get all authors and capture the first authorId
+GET {{BookApi_HostAddress}}/api/authors?Pagination.Limit=100&Pagination.CurrentPage=0&SortedBy.Order=ASC
+Accept: application/json
+
+> {% 
+  const response = pm.response.json();
+  const firstAuthorId = response.content[0].authorId;
+  pm.environment.set("authorId", firstAuthorId);
+%}
+
+###
+
+### Get a single author by ID using the captured authorId
+GET {{BookApi_HostAddress}}/api/authors/{{authorId}}
+Accept: application/json
+
+###
+
+### Create a new author
+POST {{BookApi_HostAddress}}/api/authors
+Content-Type: application/json
+
+{
+  "name": "New Author",
+  "bio": "Bio of the new author"
+}
+
+###
+
+### Update an existing author using the captured authorId
+PUT {{BookApi_HostAddress}}/api/authors/{{authorId}}
+Content-Type: application/json
+
+{
+  "authorId": "{{authorId}}",
+  "name": "Updated Author",
+  "bio": "Updated bio of the author"
+}
+
+###
+
+### Delete an author by ID using the captured authorId
+DELETE {{BookApi_HostAddress}}/api/authors/{{authorId}}
+Accept: application/json
+
+### Subjects API
+
+GET {{BookApi_HostAddress}}/api/subjects
+Accept: application/json
+
+### Get all subjects and capture the first subjectId
+GET {{BookApi_HostAddress}}/api/subjects?Pagination.Limit=100&Pagination.CurrentPage=0&SortedBy.Order=ASC
+Accept: application/json
+
+> {% 
+  const response = pm.response.json();
+  const firstSubjectId = response.content[0].subjectId;
+  pm.environment.set("subjectId", firstSubjectId);
+%}
+
+###
+
+### Get a single subject by ID using the captured subjectId
+GET {{BookApi_HostAddress}}/api/subjects/{{subjectId}}
+Accept: application/json
+
+###
+
+### Create a new subject
+POST {{BookApi_HostAddress}}/api/subjects
+Content-Type: application/json
+
+{
+  "description": "New Subject"
+}
+
+###
+
+### Update an existing subject using the captured subjectId
+PUT {{BookApi_HostAddress}}/api/subjects/{{subjectId}}
+Content-Type: application/json
+
+{
+  "subjectId": "{{subjectId}}",
+  "description": "Updated Subject"
+}
+
+###
+
+### Delete a subject by ID using the captured subjectId
+DELETE {{BookApi_HostAddress}}/api/subjects/{{subjectId}}
+Accept: application/json
+
+
+
+### PurchaseType API
+
+GET {{BookApi_HostAddress}}/api/purchase-types
+Accept: application/json
+
+### Get all purchase types and capture the first purchaseTypeId
+GET {{BookApi_HostAddress}}/api/purchase-types?Pagination.Limit=100&Pagination.CurrentPage=0&SortedBy.Order=ASC
+Accept: application/json
+
+> {% 
+  const response = pm.response.json();
+  const firstPurchaseTypeId = response.content[0].purchaseTypeId;
+  pm.environment.set("purchaseTypeId", firstPurchaseTypeId);
+%}
+
+###
+
+### Get a single purchase type by ID using the captured purchaseTypeId
+GET {{BookApi_HostAddress}}/api/purchase-types/{{purchaseTypeId}}
+Accept: application/json
+
+###
+
+### Create a new purchase type
+POST {{BookApi_HostAddress}}/api/purchase-types
+Content-Type: application/json
+
+{
+  "name": "internet"
+}
+
+### balcão, self-service, internet, evento,
+
+### Update an existing purchase type using the captured purchaseTypeId
+PUT {{BookApi_HostAddress}}/api/purchase-types/{{purchaseTypeId}}
+Content-Type: application/json
+
+{
+  "purchaseTypeId": "{{purchaseTypeId}}",
+  "name": "Evento"
+}
+
+###
+
+### Delete a purchase type by ID using the captured purchaseTypeId
+DELETE {{BookApi_HostAddress}}/api/purchase-types/{{purchaseTypeId}}
+Accept: application/json
+
+
+
+### 
+PUT {{BookApi_HostAddress}}/api/books/d2147ff2-3be0-47f6-a7e1-0ae941a49f8b
+Content-Type: application/json
+
+{"bookId":"d2147ff2-3be0-47f6-a7e1-0ae941a49f8b","title":"Livro teste","publisher":"ASD","edition":1,"publicationYear":"2014","bookAuthors":[{"bookCodl":"d2147ff2-3be0-47f6-a7e1-0ae941a49f8b","authorCodAu":"fbd86cec-9bd7-4413-a726-7ec9ffc37035"}],"bookSubjects":[{"bookCodl":"d2147ff2-3be0-47f6-a7e1-0ae941a49f8b","subjectCodAs":"7e84d54b-74a6-409d-b152-0f5d6366e6c8"}],"bookPrices":[{"bookId":"d2147ff2-3be0-47f6-a7e1-0ae941a49f8b","purchaseTypeId":"f927a771-c6a5-4428-9648-5bc882740606","price":100},{"bookId":"d2147ff2-3be0-47f6-a7e1-0ae941a49f8b","purchaseTypeId":"0663bc84-9773-44f5-bd00-9c5f361f41b9","price":80}]}

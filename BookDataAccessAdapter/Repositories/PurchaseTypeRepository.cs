@@ -6,27 +6,27 @@ using BookDomain.Repositories;
 
 namespace BookDataAccessAdapter.Repositories
 {
-    public class SubjectRepository(BookContext dbContext) : BaseRepository<Subject, Guid, BasicFilter>(dbContext), ISubjectRepository
+    public class PurchaseTypeRepository(BookContext dbContext) : BaseRepository<PurchaseType, Guid, BasicFilter>(dbContext), IPurchaseTypeRepository
     {
-        public override IQueryable<Subject> ApplyFilters(IQueryable<Subject> query, BasicFilter filter)
+        public override IQueryable<PurchaseType> ApplyFilters(IQueryable<PurchaseType> query, BasicFilter filter)
         {
             // query para filtrar por algum campos específico da entidade aqui aqui
             return query;
         }
 
-        protected override Guid GetEntityId(Subject entity)
+        protected override Guid GetEntityId(PurchaseType entity)
         {
-            return entity.SubjectId;
+            return entity.PurchaseTypeId;
         }
 
-        public override async Task<Subject> SaveOrUpdate(Subject entity)
+        public override async Task<PurchaseType> SaveOrUpdate(PurchaseType entity)
         {
-            var existingEntity = _dbContext.Set<Subject>().Find(entity.SubjectId);
+            var existingEntity = _dbContext.Set<PurchaseType>().Find(entity.PurchaseTypeId);
 
             if (existingEntity != null)
             {
                 // Atualize as propriedades da entidade principal
-                existingEntity.Description = entity.Description;
+                existingEntity.Name = entity.Name;
 
                 _dbContext.Update(existingEntity);
             }
@@ -39,5 +39,6 @@ namespace BookDataAccessAdapter.Repositories
 
             return entity;
         }
+
     }
 }
