@@ -18,5 +18,26 @@ namespace BookDataAccessAdapter.Repositories
         {
             return entity.SubjectId;
         }
+
+        public override async Task<Subject> SaveOrUpdate(Subject entity)
+        {
+            var existingEntity = _dbContext.Set<Subject>().Find(entity.SubjectId);
+
+            if (existingEntity != null)
+            {
+                // Atualize as propriedades da entidade principal
+                existingEntity.Description = entity.Description;
+
+                _dbContext.Update(existingEntity);
+            }
+            else
+            {
+                await _dbContext.AddAsync(entity);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
+        }
     }
 }

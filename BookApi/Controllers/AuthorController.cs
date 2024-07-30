@@ -4,6 +4,7 @@ using BookDomain.Filters;
 using BookDomain.Models;
 using BookDomain.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookApi.Controllers
 {
@@ -44,35 +45,56 @@ namespace BookApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAuthor([FromBody] Author author)
         {
-            if (author.AuthorId != null && author.AuthorId != Guid.Empty)
-                return BadRequest("Crie um objeto sem enviar o ID");
+            try
+            {
+                if (author.AuthorId != null && author.AuthorId != Guid.Empty)
+                    return BadRequest("Crie um objeto sem enviar o ID");
 
-            var model = await _service.SaveOrUpdate(author);
-            return CreatedAtAction(nameof(GetAuthorById), new { id = model.AuthorId }, model);
+                var model = await _service.SaveOrUpdate(author);
+                return CreatedAtAction(nameof(GetAuthorById), new { id = model.AuthorId }, model);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] Author updatedAuthor)
         {
-            var author = await _service.FindById(updatedAuthor.AuthorId);
-            if (author == null)
-                return NotFound();
+            try
+            {
+                var author = await _service.FindById(updatedAuthor.AuthorId);
+                if (author == null)
+                    return NotFound();
 
-            author.Name = updatedAuthor.Name;
-            // Update other properties accordingly
-            await _service.SaveOrUpdate(author);
-            return NoContent();
+                author.Name = updatedAuthor.Name;
+                // Update other properties accordingly
+                await _service.SaveOrUpdate(author);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(Guid id)
         {
-            var author = await _service.FindById(id);
-            if (author == null)
-                return NotFound();
+            try
+            {
+                var author = await _service.FindById(id);
+                if (author == null)
+                    return NotFound();
 
-            await _service.Delete(author);
-            return NoContent();
+                await _service.Delete(author);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -47,11 +47,18 @@ namespace BookApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePurchaseType([FromBody] PurchaseType PurchaseType)
         {
-            if (PurchaseType.PurchaseTypeId != null && PurchaseType.PurchaseTypeId != Guid.Empty)
-                return BadRequest("Crie um objeto sem enviar o ID");
+            try
+            {
+                if (PurchaseType.PurchaseTypeId != null && PurchaseType.PurchaseTypeId != Guid.Empty)
+                    return BadRequest("Crie um objeto sem enviar o ID");
 
-            var model = await _service.SaveOrUpdate(PurchaseType);
-            return CreatedAtAction(nameof(GetPurchaseTypeById), new { id = model.PurchaseTypeId }, model);
+                var model = await _service.SaveOrUpdate(PurchaseType);
+                return CreatedAtAction(nameof(GetPurchaseTypeById), new { id = model.PurchaseTypeId }, model);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]

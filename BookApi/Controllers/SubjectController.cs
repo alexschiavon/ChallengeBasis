@@ -3,6 +3,7 @@ using AutoMapper;
 using BookApi.Helper;
 using BookApi.Models;
 using BookDomain.Filters;
+using BookDomain.Helper.Exceptions;
 using BookDomain.Models;
 using BookDomain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -46,35 +47,53 @@ namespace BookApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSubject([FromBody] Subject subject)
         {
-            if (subject.SubjectId != null && subject.SubjectId != Guid.Empty)
-                return BadRequest("Crie um objeto sem enviar o ID");
+            try
+            {
+                if (subject.SubjectId != null && subject.SubjectId != Guid.Empty)
+                    return BadRequest("Crie um objeto sem enviar o ID");
 
-            var model = await _service.SaveOrUpdate(subject);
-            return CreatedAtAction(nameof(GetSubjectById), new { id = model.SubjectId }, model);
+                var model = await _service.SaveOrUpdate(subject);
+                return CreatedAtAction(nameof(GetSubjectById), new { id = model.SubjectId }, model);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubject(Guid id, [FromBody] Subject updatedSubject)
         {
-            var subject = await _service.FindById(updatedSubject.SubjectId);
-            if (subject == null)
-                return NotFound();
-
-            subject.Description = updatedSubject.Description;
-            // Update other properties accordingly
-            await _service.SaveOrUpdate(subject);
-            return NoContent();
+            try
+            {
+                var subject = await _service.FindById(updatedSubject.SubjectId);
+                if (subject == null)
+                    return NotFound();
+                await _service.SaveOrUpdate(updatedSubject);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubject(Guid id)
         {
-            var subject = await _service.FindById(id);
-            if (subject == null)
-                return NotFound();
+            try
+            {
+                var subject = await _service.FindById(id);
+                if (subject == null)
+                    return NotFound();
 
-            await _service.Delete(subject);
-            return NoContent();
+                await _service.Delete(subject);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Arch.Domain.Adapters.Helper;
 using Arch.Domain.Contracts.Repository;
 using BookDomain.Filters;
+using BookDomain.Helper.Exceptions;
 using BookDomain.Models;
 using BookDomain.Repositories;
 using BookDomain.Services;
@@ -60,7 +61,17 @@ namespace BookApplication.Services
 
         public void Validate(Author o)
         {
-            //TODO: Implementar regras de negócio, validação insersão ou atualização de autor
+            List<string> errors = new List<string>();
+
+            if (string.IsNullOrEmpty(o.Name) || o.Name.Length < 3 || o.Name.Length > 40)
+            {
+                errors.Add("Nome precisa ter de 3 a 40 letras.");
+            }
+
+            if (errors.Count > 0)
+            {
+                throw new ValidationException(string.Join("\n", errors));
+            }
         }
     }
 }
