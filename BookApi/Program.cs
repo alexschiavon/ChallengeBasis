@@ -1,3 +1,4 @@
+using BookApi.Middleware;
 using Finance.Application;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware(typeof(ErrorMiddleware));
 
 app.MapControllers();
 
