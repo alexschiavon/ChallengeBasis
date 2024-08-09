@@ -64,7 +64,7 @@ namespace Arch.DataAccessAdapter.Repositories.Common
         protected abstract TId GetEntityId(TEntity entity);
 
 
-        public async Task<TEntity> SaveOrUpdate(TEntity obj)
+        public virtual async Task<TEntity> SaveOrUpdate(TEntity obj)
         {
             TEntity? existingEntity = null;
 
@@ -78,7 +78,7 @@ namespace Arch.DataAccessAdapter.Repositories.Common
                 _dbContext.Update(obj);
             }
             else
-            {
+            {   
                 await _dbContext.AddAsync(obj);
             }
 
@@ -87,7 +87,7 @@ namespace Arch.DataAccessAdapter.Repositories.Common
             return obj;
         }
 
-        public async Task Delete(TEntity obj)
+        public virtual async Task Delete(TEntity obj)
         {
             if (obj == null)
             {
