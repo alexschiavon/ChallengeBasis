@@ -44,7 +44,7 @@ namespace BookApplication.Services
             repository.Dispose();
         }
 
-        public Task<Metadata<Book, BasicFilter>> FindByFilter(Metadata<Book, BasicFilter> filter)
+        public Task<Metadata<Book, BookFilter>> FindByFilter(Metadata<Book, BookFilter> filter)
         {
             return repository.FindByFilterAsync(filter);
         }
@@ -54,7 +54,7 @@ namespace BookApplication.Services
             return await repository.FindById(id);
         }
 
-        public IBaseRepository<Book, Guid, BasicFilter> Instance()
+        public IBaseRepository<Book, Guid, BookFilter> Instance()
         {
             return this.repository;
         }
@@ -98,17 +98,23 @@ namespace BookApplication.Services
             {
                 errors.Add("Assunto é obrigatório.");
             }
-            // if (book.Price <= 0)
-            // {
-            //     errors.Add("Price is required and must be greater than 0.");
-            // }
-            // Add other validations as needed
+            if (book.BookPrices == null || book.BookPrices.Count == 0)
+            {
+                
+                errors.Add("Preço é obrigatório.");
+            }
+            else
+            {
+                if (book.BookPrices == null || !book.BookPrices.Any() || book.BookPrices.Any(price => price.Price <= 0))
+                {
+                    errors.Add("Precisa incluir um preço e o preço precisa ser maior que zero.");
+                }
+            }
 
             if (errors.Count > 0)
             {
                 throw new ValidationException(string.Join("\n", errors));
             }
-
         }
 
     }

@@ -2,6 +2,7 @@
 using AutoMapper;
 using BookApi.Helper;
 using BookApi.Models;
+using BookApplication.Services;
 using BookDomain.Filters;
 using BookDomain.Helper.Exceptions;
 using BookDomain.Models;
@@ -18,13 +19,15 @@ namespace BookApi.Controllers
         private readonly ISubjectService _service;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
+        private readonly IBookService _bookService;
 
 
-        public SubjectController(ISubjectService service, ILogger logger, IMapper mapper)
+        public SubjectController(ISubjectService service, ILogger logger, IMapper mapper, IBookService bookService)
         {
             _service = service;
             _logger = logger;
             _mapper = mapper;
+            _bookService = bookService;
         }
 
         [HttpGet]
@@ -94,6 +97,13 @@ namespace BookApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("{subjectId}/books")]
+        public async Task<IActionResult> GetAuthorBooks(Guid subjectId)
+        {
+            Metadata<Book, BookFilter> metadataBooks = await _bookService.FindByFilter(new Metadata<Book, BookFilter> { Custom = new BookFilter { SubjectId = subjectId.ToString() } });
+            return Ok(metadataBooks);
         }
     }
 }

@@ -5,7 +5,7 @@ using BookDomain.Models.Report;
 
 namespace BookDomain.Repositories
 {
-    public interface IBookRepository : IBaseRepository<Book, Guid, BasicFilter>
+    public interface IBookRepository : IBaseRepository<Book, Guid, BookFilter>
     {
         public Task<ICollection<BookDetails>> Report();
     }

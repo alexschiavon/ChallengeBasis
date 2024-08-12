@@ -1,11 +1,11 @@
 ﻿using Arch.Domain.Adapters.Helper;
 using Arch.Domain.Contracts.Repository;
 using BookDomain.Filters;
+using BookDomain.Helper.Exceptions;
 using BookDomain.Models;
 using BookDomain.Repositories;
 using BookDomain.Services;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
 
 namespace BookApplication.Services
 {
@@ -13,17 +13,23 @@ namespace BookApplication.Services
     {
         private readonly IPurchaseTypeRepository repository;
         private readonly ILogger logger;
+        private readonly IBookRepository bookRepository;
 
-        public PurchaseTypeService(IPurchaseTypeRepository repository, ILoggerFactory loggerFactory)
+        public PurchaseTypeService(IPurchaseTypeRepository repository, ILoggerFactory loggerFactory, IBookRepository bookRepository)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             logger = loggerFactory?.CreateLogger<PurchaseTypeService>() ??
                 throw new ArgumentNullException(nameof(loggerFactory));
+            this.bookRepository = bookRepository;
         }
 
         public async Task<bool> Delete(PurchaseType o)
         {
-            //TODO: Implementar regras de negócio se tiver um autor associado a um livro, não pode ser deletado
+            Metadata<Book, BookFilter> metadataBooks = await bookRepository.FindByFilterAsync(new Metadata<Book, BookFilter> { Custom = new BookFilter { PurchaseTypeId = o.PurchaseTypeId.ToString() } });
+            if (metadataBooks?.Pagination?.TotalCount > 0)
+            {
+                throw new ValidationException("Não é possível deletar uma forma de compra que possui livros associados.");
+            }
             var del = await repository.FindById(o.PurchaseTypeId);
             if (del == null)
             {
