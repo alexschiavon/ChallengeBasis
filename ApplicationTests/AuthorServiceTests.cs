@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using BookDataAccessAdapter.Context;
-using System;
-
 namespace ApplicationTests
 {
     public class TestLogger<T> : ILogger<T>
@@ -39,12 +37,13 @@ namespace ApplicationTests
                 .Options;
         }
 
-        private AuthorService CreateService(out Mock<IAuthorRepository> repositoryMock)
+        private AuthorService CreateService(out Mock<IAuthorRepository> repositoryMock, out Mock<IBookRepository> repositoryBookMock)
         {
             repositoryMock = new Mock<IAuthorRepository>();
+            repositoryBookMock = new Mock<IBookRepository>();
             var loggerFactory = new TestLoggerFactory();
 
-            return new AuthorService(repositoryMock.Object, loggerFactory);
+            return new AuthorService(repositoryMock.Object, loggerFactory, repositoryBookMock.Object);
         }
 
         [Fact]
@@ -52,7 +51,7 @@ namespace ApplicationTests
         {
             // Arrange
             var author = new Author { AuthorId = Guid.NewGuid() };
-            var service = CreateService(out var repositoryMock);
+            var service = CreateService(out var repositoryMock, out var repositoryBookMock);
             repositoryMock.Setup(r => r.FindById(author.AuthorId)).ReturnsAsync(author);
 
             // Act
@@ -68,7 +67,7 @@ namespace ApplicationTests
         {
             // Arrange
             var author = new Author { AuthorId = Guid.NewGuid() };
-            var service = CreateService(out var repositoryMock);
+            var service = CreateService(out var repositoryMock, out var repositoryBookMock);
             repositoryMock.Setup(r => r.FindById(author.AuthorId)).ReturnsAsync((Author)null);
 
             // Act
@@ -85,7 +84,7 @@ namespace ApplicationTests
             // Arrange
             var authorId = Guid.NewGuid();
             var author = new Author { AuthorId = authorId };
-            var service = CreateService(out var repositoryMock);
+            var service = CreateService(out var repositoryMock, out var repositoryBookMock);
             repositoryMock.Setup(r => r.FindById(authorId)).ReturnsAsync(author);
 
             // Act
@@ -101,7 +100,7 @@ namespace ApplicationTests
         {
             // Arrange
             var authorId = Guid.NewGuid();
-            var service = CreateService(out var repositoryMock);
+            var service = CreateService(out var repositoryMock, out var repositoryBookMock);
             repositoryMock.Setup(r => r.FindById(authorId)).ReturnsAsync((Author)null);
 
             // Act
