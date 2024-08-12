@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookDataAccessAdapter.Repositories
 {
-    public class BookRepository(BookContext dbContext) : BaseRepository<Book, Guid, BasicFilter>(dbContext), IBookRepository
+    public class BookRepository(BookContext dbContext) : BaseRepository<Book, Guid, BookFilter>(dbContext), IBookRepository
     {
-        public override IQueryable<Book> ApplyFilters(IQueryable<Book> query, BasicFilter filter)
+        public override IQueryable<Book> ApplyFilters(IQueryable<Book> query, BookFilter filter)
         {
             // query para filtrar por algum campos específico da entidade aqui aqui
             // Inclui as listas de BookAuthors e BookSubjects
@@ -18,6 +18,22 @@ namespace BookDataAccessAdapter.Repositories
                 .Include(b => b.BookPrices)
                 .Include(b => b.BookAuthors)
                 .Include(b => b.BookSubjects);
+
+            if (filter != null && filter.AuthorId != null && Guid.TryParse(filter.AuthorId, out Guid authorId))
+            {
+                query = query.Where(b => b.BookAuthors.Any(a => a.AuthorCodAu == authorId));
+            }
+
+            if (filter != null && filter.SubjectId != null && Guid.TryParse(filter.SubjectId, out Guid subjectId))
+            {
+                query = query.Where(b => b.BookSubjects.Any(s => s.SubjectCodAs == subjectId));
+            }
+
+            if (filter != null && filter.PurchaseTypeId != null && Guid.TryParse(filter.PurchaseTypeId, out Guid purchaseTypeId))
+            {
+                query = query.Where(b => b.BookPrices.Any(s => s.PurchaseTypeId == purchaseTypeId));
+            }
+
             return query;
         }
 

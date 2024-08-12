@@ -12,18 +12,26 @@ namespace BookApplication.Services
     public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository repository;
+        private readonly IBookRepository bookRepository;
         private readonly ILogger logger;
 
-        public AuthorService(IAuthorRepository repository, ILoggerFactory loggerFactory)
+        public AuthorService(IAuthorRepository repository, ILoggerFactory loggerFactory, IBookRepository bookRepository)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             logger = loggerFactory?.CreateLogger<AuthorService>() ??
                 throw new ArgumentNullException(nameof(loggerFactory));
+            this.bookRepository = bookRepository;
         }
 
         public async Task<bool> Delete(Author o)
         {
-            //TODO: Implementar regras de negócio se tiver um autor associado a um livro, não pode ser deletado
+            //Implementação das regras de negócio se tiver um autor associado a um livro, não pode ser deletado
+            Metadata<Book, BookFilter> metadataBooks = await bookRepository.FindByFilterAsync(new Metadata<Book, BookFilter> { Custom = new BookFilter { AuthorId = o.AuthorId.ToString() } });
+            if (metadataBooks?.Pagination?.TotalCount > 0)
+            {
+                throw new ValidationException("Não é possível deletar um autor que possui livros associados.");
+            }
+
             var del = await repository.FindById(o.AuthorId);
             if (del == null)
             {

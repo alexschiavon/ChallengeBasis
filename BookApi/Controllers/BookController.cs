@@ -28,7 +28,7 @@ namespace BookApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBooks([FromQuery] Metadata<Book, BasicFilter> metadata)
+        public async Task<IActionResult> GetBooks([FromQuery] Metadata<Book, BookFilter> metadata)
         {
             var model = await _service.FindByFilter(metadata);
             return Ok(model);

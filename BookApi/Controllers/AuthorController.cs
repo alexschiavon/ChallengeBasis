@@ -14,15 +14,17 @@ namespace BookApi.Controllers
     public class AuthorController : ControllerBase
     {
         private readonly IAuthorService _service;
+        private readonly IBookService _bookService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
 
-        public AuthorController(IAuthorService service, ILogger logger, IMapper mapper)
+        public AuthorController(IAuthorService service, ILogger logger, IMapper mapper, IBookService bookService)
         {
             _service = service;
             _logger = logger;
             _mapper = mapper;
+            _bookService = bookService;
         }
 
         [HttpGet]
@@ -95,6 +97,13 @@ namespace BookApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("{authorId}/books")]
+        public async Task<IActionResult> GetAuthorBooks(Guid authorId)
+        {
+            Metadata<Book, BookFilter> metadataBooks = await _bookService.FindByFilter(new Metadata<Book, BookFilter> { Custom = new BookFilter { AuthorId = authorId.ToString() } });
+            return Ok(metadataBooks);
         }
     }
 }

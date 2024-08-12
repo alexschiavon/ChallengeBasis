@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookDomain.Helper.Exceptions
+﻿namespace BookDomain.Helper.Exceptions
 {
     public class ValidationException : Exception
     {

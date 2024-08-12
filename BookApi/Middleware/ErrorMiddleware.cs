@@ -1,4 +1,5 @@
-﻿using Finance.Api.Model.Error;
+﻿using BookDomain.Helper.Exceptions;
+using Finance.Api.Model.Error;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Net;
@@ -31,16 +32,17 @@ namespace BookApi.Middleware
         private Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             ErrorResponse errorResponse;
+            string exName = ex is ValidationException ? "ValidationException" : HttpStatusCode.InternalServerError.ToString();
 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ||
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Qa")
             {
-                errorResponse = new ErrorResponse(HttpStatusCode.InternalServerError.ToString(),
+                errorResponse = new ErrorResponse(exName,
                                                       $"{ex.Message} {ex?.InnerException?.Message}", error500);
             }
             else
             {
-                errorResponse = new ErrorResponse(HttpStatusCode.InternalServerError.ToString(),
+                errorResponse = new ErrorResponse(exName,
                                                       "An internal server error has occurred.", error500);
             }
 

@@ -5,7 +5,7 @@ using BookDomain.Models.Report;
 
 namespace BookDomain.Services
 {
-    public interface IBookService : IBaseService<Book, Guid, BasicFilter>
+    public interface IBookService : IBaseService<Book, Guid, BookFilter>
     {
         Task<ICollection<BookDetails>> Report();
     }
